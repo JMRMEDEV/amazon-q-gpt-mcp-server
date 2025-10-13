@@ -94,3 +94,5 @@ To use with Amazon Q, add this server to your MCP configuration:
 
 Environment variables:
 - `OPENAI_API_KEY`: Your OpenAI API key (required)
+- `OPENAI_MODEL`: Model to use (default: gpt-4o-mini)
+- `DEBUG`: Enable debug logging (default: false)

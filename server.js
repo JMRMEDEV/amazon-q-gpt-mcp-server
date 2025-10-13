@@ -14,7 +14,7 @@ dotenv.config();
 
 class GPTAgentServer {
   constructor() {
-    console.error('Initializing GPT Agent Server...');
+    this.debug('Initializing GPT Agent Server...');
     this.server = new Server(
       {
         name: 'gpt',
@@ -26,14 +26,20 @@ class GPTAgentServer {
         },
       }
     );
-    console.error('Server instance created');
+    this.debug('Server instance created');
 
     this.setupAgent();
-    console.error('Agent setup complete');
+    this.debug('Agent setup complete');
     this.setupToolHandlers();
-    console.error('Tool handlers setup complete');
+    this.debug('Tool handlers setup complete');
     this.setupErrorHandling();
-    console.error('Error handling setup complete');
+    this.debug('Error handling setup complete');
+  }
+
+  debug(message) {
+    if (process.env.DEBUG === 'true') {
+      console.error(`[DEBUG] ${message}`);
+    }
   }
 
   setupAgent() {
@@ -140,7 +146,7 @@ class GPTAgentServer {
     const attempts = this.attemptTracker.get(topic) || 0;
     const shouldUseWebSearch = this.shouldTriggerWebSearch(message, attempts);
 
-    console.error(`Debug: message="${message}", attempts=${attempts}, shouldUseWebSearch=${shouldUseWebSearch}`);
+    this.debug(`message="${message}", attempts=${attempts}, shouldUseWebSearch=${shouldUseWebSearch}`);
 
     // Build system message with web search capability
     let systemContent = `You are a Senior Software Architect and Full-Stack Developer with expertise in:
@@ -168,7 +174,7 @@ Focus ONLY on software development, architecture, and debugging topics. Provide 
     if (shouldUseWebSearch) {
       const searchResults = await this.performWebSearch(message, attempts);
       userContent += `\n\nWeb Search Results: ${searchResults}`;
-      console.error(`Debug: Added web search results to user content`);
+      this.debug('Added web search results to user content');
     }
 
     const userMessage = { role: 'user', content: userContent };
@@ -326,11 +332,11 @@ Focus ONLY on software development, architecture, and debugging topics. Provide 
 
   async run() {
     try {
-      console.error('Starting GPT Agent MCP server...');
+      this.debug('Starting GPT Agent MCP server...');
       const transport = new StdioServerTransport();
-      console.error('Transport created, connecting...');
+      this.debug('Transport created, connecting...');
       await this.server.connect(transport);
-      console.error('GPT Agent MCP server running on stdio');
+      this.debug('GPT Agent MCP server running on stdio');
     } catch (error) {
       console.error('Failed to start server:', error);
       process.exit(1);
