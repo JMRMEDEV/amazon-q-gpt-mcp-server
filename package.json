@@ -1,0 +1,27 @@
+{
+  "name": "mcp-gpt-agent",
+  "version": "1.0.0",
+  "description": "MCP server for ChatGPT agent with software development focus",
+  "type": "module",
+  "main": "server.js",
+  "bin": {
+    "mcp-gpt-agent": "./server.js"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.4.0",
+    "dotenv": "^16.0.0",
+    "openai": "^4.104.0"
+  },
+  "keywords": [
+    "mcp",
+    "openai",
+    "gpt",
+    "software-development",
+    "agent"
+  ],
+  "author": "Developer",
+  "license": "MIT"
+}

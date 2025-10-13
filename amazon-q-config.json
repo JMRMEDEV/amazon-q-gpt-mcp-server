@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "gpt": {
+      "command": "node",
+      "args": ["/home/jmrmedev/mcp-servers/gpt/server.js"],
+      "cwd": "/home/jmrmedev/mcp-servers/gpt"
+    }
+  }
+}
