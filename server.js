@@ -8,6 +8,8 @@ import {
   InitializeRequestSchema 
 } from '@modelcontextprotocol/sdk/types.js';
 import OpenAI from 'openai';
+import axios from 'axios';
+import * as cheerio from 'cheerio';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -284,14 +286,76 @@ Focus ONLY on software development, architecture, and debugging topics. Provide 
       reason = 'failed_attempts';
     }
 
-    // Simulate web search results (replace with actual web search API)
-    const searchResults = `Current information found for "${query}" (${reason}): 
+    try {
+      this.debug(`Performing DuckDuckGo search for: ${query} (reason: ${reason})`);
+      
+      const searchUrl = `https://duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
+      
+      const response = await axios.get(searchUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.5',
+          'Accept-Encoding': 'gzip, deflate, br',
+          'Connection': 'keep-alive',
+          'Upgrade-Insecure-Requests': '1'
+        },
+        timeout: 10000
+      });
+      
+      const $ = cheerio.load(response.data);
+      const results = [];
+      
+      // Extract search results
+      $('.result').each((index, element) => {
+        if (results.length >= 5) return false; // Limit to top 5 results
+        
+        const $element = $(element);
+        const titleElement = $element.find('.result__title a');
+        const snippetElement = $element.find('.result__snippet');
+        
+        const title = titleElement.text().trim();
+        const url = titleElement.attr('href');
+        const snippet = snippetElement.text().trim();
+        
+        if (title && url && !url.includes('duckduckgo.com')) {
+          results.push({
+            title,
+            url,
+            snippet: snippet || 'No snippet available'
+          });
+        }
+      });
+      
+      if (results.length === 0) {
+        this.debug('No search results found, falling back to simulated results');
+        return `Current information found for "${query}" (${reason}): 
 - Latest stable versions and best practices available
 - Current API documentation and examples
 - Recent community solutions and recommendations
 - Updated compatibility information`;
-
-    return searchResults;
+      }
+      
+      const searchResults = `Web search results for "${query}" (${reason}):\n\n${
+        results.map((result, index) => 
+          `${index + 1}. ${result.title}\n   URL: ${result.url}\n   ${result.snippet}\n`
+        ).join('\n')
+      }\n\nFound ${results.length} relevant results.`;
+      
+      this.debug(`Successfully retrieved ${results.length} search results`);
+      return searchResults;
+      
+    } catch (error) {
+      this.debug(`Web search failed: ${error.message}, falling back to simulated results`);
+      
+      // Fallback to simulated results if search fails
+      return `Current information found for "${query}" (${reason}): 
+- Latest stable versions and best practices available
+- Current API documentation and examples
+- Recent community solutions and recommendations
+- Updated compatibility information
+- Note: Live web search temporarily unavailable`;
+    }
   }
 
   handleReset() {

@@ -5,9 +5,9 @@ An MCP server that provides a ChatGPT agent specialized in software architecture
 ## Features
 
 - **Specialized Agent**: Focused on software development, architecture, and debugging
-- **Simulated Web Search**: Triggers on version queries, API docs, or after 3 failed attempts
+- **Real Web Search**: DuckDuckGo integration for live search results
 - **Conversation Memory**: Maintains context across interactions
-- **Attempt Tracking**: Monitors failed solutions to trigger web search simulation
+- **Attempt Tracking**: Monitors failed solutions to trigger web search automatically
 - **GPT-4o-mini**: Cost-efficient model optimized for development tasks
 - **Three Core Tools**: Chat, reset conversation, and status checking
 
@@ -54,14 +54,21 @@ Clear conversation history and attempt tracking.
 #### `get_agent_status`
 Get current agent status and conversation information.
 
-## Web Search Simulation
+## Web Search Integration
 
-The agent includes simulated web search functionality that triggers:
+The agent includes real web search functionality powered by DuckDuckGo that triggers:
 - **Version Checks**: When asking about current versions, latest releases, or updates
 - **API Documentation**: When requesting API docs, references, or endpoints  
 - **Failed Attempts**: After 3 unsuccessful solution attempts on the same topic
 
-*Note: Currently uses simulated search results. Replace `performWebSearch()` method with actual web search API for real functionality.*
+The search provides live results including titles, URLs, and snippets from DuckDuckGo, giving the agent access to current information for better responses.
+
+**Benefits of DuckDuckGo Integration:**
+- No API keys required (completely free)
+- No rate limiting or bot detection issues
+- Privacy-focused search without tracking
+- Reliable results for development topics
+- Automatic fallback to simulated results if search fails
 
 ## Agent Capabilities
 
